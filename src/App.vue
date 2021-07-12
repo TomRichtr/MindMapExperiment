@@ -1,32 +1,68 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
+    <div id="map" style="width: 100%; height: 500px"></div>
   </div>
 </template>
 
-<style lang="scss">
+<script>
+import MindElixir from "mind-elixir";
+import { testData } from "./data/testData";
+
+export default {
+  name: "App",
+  data() {
+    return {
+      ME: null,
+    };
+  },
+  mounted() {
+    this.ME = new MindElixir({
+      el: "#map",
+      direction: MindElixir.SIDE,
+      data: testData,
+      draggable: true,
+      contextMenu: true,
+      toolBar: true,
+      nodeMenu: true,
+      keypress: true,
+      contextMenuOption: {
+        focus: true,
+        link: true,
+        extend: [
+          {
+            name: "Add a link",
+            onclick: () => {
+              this.ME.currentNode.appendChild(this.createLinkElement());
+              this.ME.container.getElementsByTagName("cmenu")[0].hidden = true;
+            },
+          },
+        ],
+      },
+    });
+    this.ME.init();
+  },
+  methods: {
+    createLinkElement() {
+      const htmlString = "<span> 📎</span>";
+      const span = document.createElement("span");
+      span.innerHTML = htmlString.trim();
+      span.firstChild.addEventListener("click", this.openLink);
+      return span.firstChild;
+    },
+    openLink() {
+      window.open("https://www.w3schools.com", "_blank");
+    },
+  },
+};
+</script>
+
+<style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+  margin-top: 60px;
 }
 </style>
